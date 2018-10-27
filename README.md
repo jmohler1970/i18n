@@ -8,5 +8,5 @@ Language files go into ./lang
 
 Supported formats include
 
-`.properties` (ini)
-`.php` (name value pairs)
+* `.properties` (ini)
+* `.php` (name value pairs)
