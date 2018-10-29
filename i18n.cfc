@@ -1,22 +1,23 @@
 component {
 
 
-variables.langRoot = expandPath(".")
+variables.langRoot = expandPath("./lang");
 variables.arLang = []; // Names of all the current languages
-variables.cache = {content: "i18n_content", language : "i18n_lang"}
+variables.cache = {language : "i18n_lang"}
 
+array function getLang()	{
+	return variables.arLang;
+	}
 
 void function setupRequest()	{
 
 
-	if(this.arLang.isEmpty())	{
+	if(variables.arLang.isEmpty())	{
 		for(var langFile in DirectoryList(variables.langRoot, false, "path", "*.php"))	{
-			this.arLang.append(langFile.listLast("/").listLast("\").listFirst("."));
+			variables.arLang.append(langFile.listLast("/").listLast("\").listFirst("."));
 			}
 		}
 
-
-	if(!cacheRegionExists(variables.cache.content))  CacheRegionNew(variables.cache.content);
 	if(!cacheRegionExists(variables.cache.language)) CacheRegionNew(variables.cache.language);
 
 
@@ -25,13 +26,6 @@ void function setupRequest()	{
 
 		var i18n = {};
 		i18n.append( readPHP(variables.langroot) );				// traditional language file
-		// simple append won't work
-		var stTitle = readProperties(	expandPath(".") 	& "/title.properties" );
-
-		for (var languageKey in stTitle)	{
-
-			i18n[languageKey].append( stTitle[languageKey] );	// titles are here
-			}
 
 		for (languageKey in i18n)	{
 			CachePut(languageKey, i18n[languageKey], 1, 1, variables.cache.language);
@@ -41,7 +35,7 @@ void function setupRequest()	{
 }
 
 
-string function geti18n(required string key, any placeholder = [], string lang = "en-US") output="false"	{
+string function geti18n(required string key, any placeholder = [], string lang = "en-US") {
 
 	// lang could be powered by cgi.HTTP_ACCEPT_LANGUAGE
 
@@ -107,7 +101,7 @@ private struct function readPHP(required string phpPath)	{
 
 		phpFile = phpFile.replace("\", "/", "all");
 
-		var languageKey = phpFile.listLast("/").listFirst(".");
+		var languageKey = phpFile.listLast("/").listFirst(".").replacelist("_", "-");
 
 		stProperties[languageKey] = { "_reading" : phpFile };
 
@@ -126,34 +120,38 @@ private struct function readPHP(required string phpPath)	{
 			var splitAt 	= line.find("=>");
 			var commentAt  = line.find("//");
 
+			try	{
+				if (splitAt != 0)	{
 
-			if (splitAt != 0)	{
+					var key = line.left(splitAt - 1).trim().replacelist('"', "")
+							.replace(',', '', 'all')
+							.replace("'", "", 'all')
+							.trim();
 
-				var key = line.left(splitAt - 1).trim().replacelist('"', "")
-						    .replace(',', '', 'all')
-						    .replace("'", "", 'all')
-						    .trim();
+					var value = line.find("//") ?
+							line.mid(splitAt + 2, CommentAt - (splitAt + 2)	).trim().replacelist('"', '')
+							:
+							line.mid(splitAt + 2, 1000					).trim().replacelist('"', '')
+							;
 
-				var value = line.find("//") ?
-						line.mid(splitAt + 2, CommentAt - (splitAt + 2)	).trim().replacelist('"', '')
-						:
-						line.mid(splitAt + 2, 1000					).trim().replacelist('"', '')
-						;
-
-				// Remove trailing ,
-				if (value.right(1) == ",")
-					value = value.mid(1, value.len() - 1);
-
-
-				if (value.right(1) == "'")
-					value = value.mid(1, value.len() - 1);
-
-				if (value.left(1) == "'")
-					value = value.mid(2, 1000);
+					// Remove trailing ,
+					if (value.right(1) == ",")
+						value = value.mid(1, value.len() - 1);
 
 
-				stProperties[languageKey][key] = value;
-			} // valid split at
+					if (value.right(1) == "'")
+						value = value.mid(1, value.len() - 1);
+
+					if (value.left(1) == "'")
+						value = value.mid(2, 1000);
+
+
+					stProperties[languageKey][key] = value;
+				} // valid split at
+			}	
+			catch (any e) {
+				}
+			
 
 		} // end line
 	} // end file
