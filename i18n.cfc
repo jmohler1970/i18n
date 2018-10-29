@@ -38,23 +38,18 @@ void function setupRequest()	{
 string function geti18n(required string key, any placeholder = [], string lang = "en-US") {
 
 	// lang could be powered by cgi.HTTP_ACCEPT_LANGUAGE
-
 	arguments.lang = arguments.lang.listfirst();
-
 
 	if (!isArray(arguments.placeholder)) {
 		arguments.placeholder = [arguments.placeholder]
 		};
 
-
 	if (CacheIdExists(arguments.lang, variables.cache.language))	{
 
 		var stLang = cacheGet(arguments.lang, variables.cache.language);
-
-
 		if (stLang.keyExists(arguments.key))	{
 
-			myString = stLang[arguments.key];
+			var myString = stLang[arguments.key];
 
 			for (var i in arguments.placeholder)	{
 
