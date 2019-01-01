@@ -22,8 +22,7 @@ array function getCacheIDs() output="false"	{
 }
 
 
-void function setupRequest()	{
-
+void function setupApplication() output="false"	{
 
 	if(variables.arLang.isEmpty())	{
 		for(var langFile in DirectoryList(variables.langRoot, false, "path", "*.php"))	{
