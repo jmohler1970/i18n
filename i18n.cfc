@@ -39,10 +39,26 @@ void function setupRequest()	{
 }
 
 
-string function geti18n(required string key, any placeholder = [], string lang = "en-US") {
+
+string function geti18n(required string key, any placeholder = [], string lang = "en-US") output="false" {
 
 	// lang could be powered by cgi.HTTP_ACCEPT_LANGUAGE
+	var final_lang = "";
+	for (var accept_lang in ListToArray(arguments.lang))	{
+		if (variables.arLang.contains(accept_lang.listfirst(";"))	{
+			final_lang = accept_lang.listfirst(";");
+		}
+	}
+
+	if (final_lang == "")	{
+		return "Error in processing: " & arguments.lang;
+	}
+
+
 	arguments.lang = arguments.lang.listfirst();
+
+
+
 
 	if (!isArray(arguments.placeholder)) {
 		arguments.placeholder = [arguments.placeholder]
