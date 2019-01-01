@@ -45,7 +45,7 @@ string function geti18n(required string key, any placeholder = [], string lang =
 	var arLang = cacheGetAllIds(variables.cache.language);
 
 	var final_lang = "";
-	for (var accept_lang in ListToArray(canonicalize(arguments.lang)))	{
+	for (var accept_lang in ListToArray(canonicalize(arguments.lang, true, true)))	{
 		if (ArrayContainsNoCase(arLang, accept_lang.listfirst(";")))	{
 			final_lang = accept_lang.listfirst(";");
 			break;
