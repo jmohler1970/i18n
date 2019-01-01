@@ -22,7 +22,7 @@ array function getCacheIDs() output="false"	{
 }
 
 
-void function setupApplication() output="false"	{
+void function setupRequest() output="false"	{
 
 	if(variables.arLang.isEmpty())	{
 		for(var langFile in DirectoryList(variables.langRoot, false, "path", "*.php"))	{
@@ -37,9 +37,9 @@ void function setupApplication() output="false"	{
 	if(cacheGetAllIds(variables.cache.language).isEmpty())	{
 
 		var i18n = {};
-		i18n.append( readPHP(variables.langroot) );				// traditional language file
+		i18n.append(readPHP(variables.langroot) );				// traditional language file
 
-		for (languageKey in i18n)	{
+		for (var languageKey in i18n)	{
 			CachePut(languageKey, i18n[languageKey], 1, 1, variables.cache.language);
 			}
 
