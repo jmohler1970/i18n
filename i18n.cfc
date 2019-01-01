@@ -45,7 +45,7 @@ string function geti18n(required string key, any placeholder = [], string lang =
 	var arLang = cacheGetAllIds(variables.cache.language);
 
 	var final_lang = "";
-	for (var accept_lang in ListToArray(arguments.lang))	{
+	for (var accept_lang in ListToArray(canonicalize(arguments.lang)))	{
 		if (ArrayContainsNoCase(arLang, accept_lang.listfirst(";")))	{
 			final_lang = accept_lang.listfirst(";");
 			break;
@@ -85,7 +85,7 @@ string function geti18n(required string key, any placeholder = [], string lang =
 }
 
 
-private struct function readProperties(required string propertyfile)		{
+private struct function readProperties(required string propertyfile)	output="false"	{
 
 	var stResult = {};
 
@@ -106,7 +106,7 @@ private struct function readProperties(required string propertyfile)		{
 
 
 // This is not a fool proof way of reading PHP language files, but it should allow for some univerality
-private struct function readPHP(required string phpPath)	{
+private struct function readPHP(required string phpPath)	output="false"		{
 
 	var stProperties = {};
 
