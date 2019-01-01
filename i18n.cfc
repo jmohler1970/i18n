@@ -1,13 +1,17 @@
-component {
+component output="false" {
 
 
 variables.langRoot = expandPath("./lang");
 variables.arLang = []; // Names of all the current languages
 variables.cache = {language : "i18n_lang"}
 
-array function getLang()	{
+array function getLang() output="false"	{
 	return variables.arLang;
 	}
+
+array function getCacheIDs() output="false"	{
+	return cacheGetAllIds(variables.cache.language);
+}	
 
 void function setupRequest()	{
 
