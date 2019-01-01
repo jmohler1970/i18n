@@ -2,14 +2,10 @@ component output="false" {
 
 
 variables.langRoot = expandPath("./lang");
-variables.arLang = []; // Names of all the current languages
 variables.cache = {language : "i18n_lang"}
 
-array function getLang() output="false"	{
-	return variables.arLang;
-	}
 
-array function getCacheIDs() output="false"	{
+array function getLang() output="false"	{
 	var AllIDs = cacheGetAllIds(variables.cache.language);
 
 
@@ -23,12 +19,6 @@ array function getCacheIDs() output="false"	{
 
 
 void function setupRequest() output="false"	{
-
-	if(variables.arLang.isEmpty())	{
-		for(var langFile in DirectoryList(variables.langRoot, false, "path", "*.php"))	{
-			variables.arLang.append(langFile.listLast("/").listLast("\").listFirst(".").replaceList("_", "-"));
-			}
-		}
 
 	if(!cacheRegionExists(variables.cache.language)) CacheRegionNew(variables.cache.language);
 
@@ -52,9 +42,11 @@ string function geti18n(required string key, any placeholder = [], string lang =
 
 
 	// lang could be powered by cgi.HTTP_ACCEPT_LANGUAGE
+	var arLang = cacheGetAllIds(variables.cache.language);
+
 	var final_lang = "";
 	for (var accept_lang in ListToArray(arguments.lang))	{
-		if (ArrayContainsNoCase(variables.arLang, accept_lang.listfirst(";")))	{
+		if (ArrayContainsNoCase(arLang, accept_lang.listfirst(";")))	{
 			final_lang = accept_lang.listfirst(";");
 			break;
 		}
