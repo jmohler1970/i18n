@@ -10,15 +10,24 @@ array function getLang() output="false"	{
 	}
 
 array function getCacheIDs() output="false"	{
-	return cacheGetAllIds(variables.cache.language);
-}	
+	var AllIDs = cacheGetAllIds(variables.cache.language);
+
+
+	AllIDs.each(function(ID, index, AllIDs){
+		AllIDs[index] = cacheGetMetadata(ID, "template", variables.cache.language);
+		AllIDs[index].lang = ID;
+	});
+
+	return AllIDs;
+}
+
 
 void function setupRequest()	{
 
 
 	if(variables.arLang.isEmpty())	{
 		for(var langFile in DirectoryList(variables.langRoot, false, "path", "*.php"))	{
-			variables.arLang.append(langFile.listLast("/").listLast("\").listFirst("."));
+			variables.arLang.append(langFile.listLast("/").listLast("\").listFirst(".").replaceList("_", "-"));
 			}
 		}
 
@@ -40,24 +49,24 @@ void function setupRequest()	{
 
 
 
-string function geti18n(required string key, any placeholder = [], string lang = "en-US") output="false" {
+string function geti18n(required string key, any placeholder = [], string lang = "en-US") {
+
 
 	// lang could be powered by cgi.HTTP_ACCEPT_LANGUAGE
 	var final_lang = "";
 	for (var accept_lang in ListToArray(arguments.lang))	{
-		if (variables.arLang.contains(accept_lang.listfirst(";")))	{
+		if (ArrayContainsNoCase(variables.arLang, accept_lang.listfirst(";")))	{
 			final_lang = accept_lang.listfirst(";");
+			break;
 		}
 	}
 
 	if (final_lang == "")	{
-		return "Error in processing: " & arguments.lang;
+		return "Error in processing: " & final_lang;
 	}
 
 
 	arguments.lang = arguments.lang.listfirst();
-
-
 
 
 	if (!isArray(arguments.placeholder)) {
@@ -173,7 +182,7 @@ private struct function readPHP(required string phpPath)	{
 
 	return stProperties;
 
-} // end funciton
+} // end function
 
 
 
