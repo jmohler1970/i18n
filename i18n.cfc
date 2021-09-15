@@ -37,7 +37,6 @@ void function setupRequest() output="false"	{
 }
 
 
-
 string function geti18n(required string key, any placeholder = [], string lang = "en-US") {
 
 
